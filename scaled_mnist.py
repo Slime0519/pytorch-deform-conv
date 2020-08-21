@@ -56,7 +56,7 @@ def train(model, generator, batch_num, epoch):
         loss.backward()
         optimizer.step()
 
-    print('Train Epoch: {}\tLoss: {:.6f}'.format(epoch, loss.data[0]))
+    print('Train Epoch: {}\tLoss: {:.6f}'.format(epoch, loss.data.item()))
 
 def test(model, generator, batch_num, epoch):
     model.eval()
@@ -71,7 +71,7 @@ def test(model, generator, batch_num, epoch):
 
         data, target = Variable(data), Variable(target)
         output = model(data)
-        test_loss += F.cross_entropy(output, target).data[0]
+        test_loss += F.cross_entropy(output, target).data.item()
         pred = output.data.max(1)[1] # get the index of the max log-probability
         correct += pred.eq(target.data).cpu().sum()
 
