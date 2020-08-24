@@ -4,6 +4,7 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 from torch_deform_conv.layers import ConvOffset2D
+from mmcv.ops import DeformConv2dPack
 
 class ConvNet(nn.Module):
     def __init__(self):
@@ -55,18 +56,22 @@ class DeformConvNet(nn.Module):
         self.bn11 = nn.BatchNorm2d(32)
 
         # conv12
-        self.offset12 = ConvOffset2D(32)
-        self.conv12 = nn.Conv2d(32, 64, 3, padding=1, stride=2)
+
+        #self.offset12 = ConvOffset2D(32)
+        #self.conv12 = nn.Conv2d(32, 64, 3, padding=1, stride=2)
+        self.deformconv1 = DeformConv2dPack(in_channels=32,out_channels=64,kernel_size=3,padding=1,stride=2)
         self.bn12 = nn.BatchNorm2d(64)
 
         # conv21
-        self.offset21 = ConvOffset2D(64)
-        self.conv21 = nn.Conv2d(64, 128, 3, padding= 1)
+        #self.offset21 = ConvOffset2D(64)
+        #self.conv21 = nn.Conv2d(64, 128, 3, padding= 1)
+        self.deformconv2 = DeformConv2dPack(64,out_channels=128,kernel_size=3,padding=1,stride=2)
         self.bn21 = nn.BatchNorm2d(128)
 
         # conv22
-        self.offset22 = ConvOffset2D(128)
-        self.conv22 = nn.Conv2d(128, 128, 3, padding=1, stride=2)
+        #self.offset22 = ConvOffset2D(128)
+        #self.conv22 = nn.Conv2d(128, 128, 3, padding=1, stride=2)
+        self.deformconv3 = DeformConv2dPack(in_channels=128,out_channels=128,kernel_size=3,padding=1,stride=2)
         self.bn22 = nn.BatchNorm2d(128)
 
         # out
@@ -76,16 +81,19 @@ class DeformConvNet(nn.Module):
         x = F.relu(self.conv11(x))
         x = self.bn11(x)
         
-        x = self.offset12(x)
-        x = F.relu(self.conv12(x))
+      #  x = self.offset12(x)
+        #x = F.relu(self.conv12(x))
+        x = F.relu(self.deformconv1(x))
         x = self.bn12(x)
         
-        x = self.offset21(x)
-        x = F.relu(self.conv21(x))
+        #x = self.offset21(x)
+        #x = F.relu(self.conv21(x))
+        x = F.relu(self.deformconv2(x))
         x = self.bn21(x)
         
-        x = self.offset22(x)
-        x = F.relu(self.conv22(x))
+        #x = self.offset22(x)
+        #x = F.relu(self.conv22(x))
+        x = F.relu(self.deformconv3(x))
         x = self.bn22(x)
         
         x = F.avg_pool2d(x, kernel_size=[x.size(2), x.size(3)])

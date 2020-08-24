@@ -35,7 +35,7 @@ train_scaled_gen = get_gen(
 )
 test_scaled_gen = get_gen(
     'test', batch_size=batch_size,
-    scale=(1.0, 2.5), translate=0.2,
+    scale=(1.-0, 2.5), translate=0.2,
     shuffle=False
 )
 
